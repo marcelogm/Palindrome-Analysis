@@ -6,7 +6,7 @@
 
 // PARA DESABILITAR AS OPCOES, COMENTE O "#define"
 // MODIFIQUE AQUI O NUMERO DE THREADS
-#define THREAD_NUMBER 2
+#define THREAD_NUMBER 4
 // CAMINHO ORIGINAL DO TEXTO
 #define FILE_DIR "bible.txt"
 // MODO DE DEPURACAO
@@ -124,7 +124,7 @@ bool palindrome(char * start, size_t size) {
     return true;
 }
 
-// TRANSFORMA PALAVRA EM SINGULAR
+// TRANSFORMA PALAVRA EM LOWER CASE
 // @param char * input palavra 
 // @param size_t length tamanho da palavra
 // @return char * ponteiro para a propria palavra
@@ -153,12 +153,13 @@ void * thread_callback(void * arg) {
     char * backup = NULL;
     char * buffer = NULL;
     int acc = 0;
-    
+
     // RECUPERA PRIMEIRA PALAVRA
     buffer = __strtok_r(param->file->content + from, " ,.-\n\0", (char **) &backup);
     
     // ENQUANTO ESTIVER DENTRO DA FAIXA DETERMINADA
-    while (buffer != NULL && buffer < param->file->content + to) {
+	// printf("/ %p => %p /", (param->file->content + from), (param->file->content + to));
+    while (buffer != NULL && (param->file->content + from) <= (param->file->content + to)) {
         // RECUPERA TAMANHO DA PALAVRA
         size_t length = strlen(buffer);
         
@@ -172,7 +173,7 @@ void * thread_callback(void * arg) {
         #endif
             // MOSTRA PALINDROMO
             #ifdef SHOW_PALINDROME_LIST
-                printf("%s \t", buffer);
+               // printf("%s \t", buffer);
             #endif
             // INCREMENTA BUFFER
             acc++;
