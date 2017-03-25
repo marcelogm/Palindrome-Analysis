@@ -6,7 +6,7 @@
 
 // PARA DESABILITAR AS OPCOES, COMENTE O "#define"
 // MODIFIQUE AQUI O NUMERO DE THREADS
-#define THREAD_NUMBER 4
+#define THREAD_NUMBER CHANGE_IT
 // CAMINHO ORIGINAL DO TEXTO
 #define FILE_DIR "bible.txt"
 // MODO DE DEPURACAO
@@ -124,7 +124,7 @@ bool palindrome(char * start, size_t size) {
     return true;
 }
 
-// TRANSFORMA PALAVRA EM LOWER CASE
+// TRANSFORMA PALAVRA EM SINGULAR
 // @param char * input palavra 
 // @param size_t length tamanho da palavra
 // @return char * ponteiro para a propria palavra
@@ -235,7 +235,7 @@ int main() {
     }
     
     // MOSTRA TOTAL DE PALINDROMOS
-    printf("PALINDROMOS %u\n", (unsigned int) palindrome);
+    // printf("PALINDROMOS %u\n", (unsigned int) palindrome);
 }
 
 

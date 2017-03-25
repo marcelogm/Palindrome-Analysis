@@ -1,0 +1,19 @@
+#!/bin/bash
+> times.txt
+echo "Threads;Serie;Real;User;Sys" >> times.txt
+for i in `seq 1 1024`;
+do
+	echo Compilando programa com $i threads.
+	sed -e "s;CHANGE_IT;$i;g" main.c > source/main_$i.c 
+	gcc source/main_$i.c -o bin/pal_$i.o -pthread
+	echo Compilado em bin/pal_$i.o.
+	echo Resfriando processador...
+	sleep 30
+	echo Analisando tempo.
+	for j in `seq 1 1000`;
+	do
+		TIMEFORMAT="$i;$j;%3R;%3U;%3S"; 
+		(time(bin/pal_$i.o)) > buffer 2>> times.txt
+	done
+	echo Analisado.
+done
