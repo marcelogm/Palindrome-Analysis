@@ -44,9 +44,9 @@ struct thread_package {
     bool is_last_thread;
     // CARGA DE TAMANHO DA THREAD
     size_t work_size;
-    // FLAG PARA AS INFORMACOES DO ARQUIVO
+    // PONTEIRO PARA AS INFORMACOES DO ARQUIVO
     f_info * file;
-    // FLAG PARA ACUMULADOR DE QUANTIDADE DE PALINDROMOS
+    // PONTEIRO PARA ACUMULADOR DE QUANTIDADE DE PALINDROMOS
     m_pack * palindrome;
 };
 typedef struct thread_package t_pack;
