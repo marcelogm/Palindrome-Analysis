@@ -20,7 +20,7 @@
 // DELIMITADORES PADRAO
 #define SPLIT_DELIM " :,;.-\n\t\r#"
 // MOSTRA RESULTADO
-#define SHOW_RESULT true
+// #define SHOW_RESULT true
 
 // GUARDA A INFORMACAO DO ARQUIVO ABERTO
 struct file_information {
