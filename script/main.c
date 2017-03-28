@@ -16,7 +16,11 @@
 // TAMANHO MAXIMO CASO UTILIZE "USE_LENGTH" 
 #define MINIMAL_LENGTH 2
 // MOSTRA LISTA DE PALINDROMOS
-#define SHOW_PALINDROME_LIST true
+// #define SHOW_PALINDROME_LIST true
+// DELIMITADORES PADRAO
+#define SPLIT_DELIM " :,;.-\n\t\r#"
+// MOSTRA RESULTADO
+#define SHOW_RESULT true
 
 // GUARDA A INFORMACAO DO ARQUIVO ABERTO
 struct file_information {
@@ -40,13 +44,11 @@ typedef struct mutex_package m_pack;
 struct thread_package {
     // INDETIFICADOR DA THREAD
     size_t id;
-    // FLAG DE ULTIMA THREAD
-    bool is_last_thread;
     // CARGA DE TAMANHO DA THREAD
     size_t work_size;
-    // FLAG PARA AS INFORMACOES DO ARQUIVO
+    // PONTEIRO PARA AS INFORMACOES DO ARQUIVO
     f_info * file;
-    // FLAG PARA ACUMULADOR DE QUANTIDADE DE PALINDROMOS
+    // PONTEIRO PARA ACUMULADOR DE QUANTIDADE DE PALINDROMOS
     m_pack * palindrome;
 };
 typedef struct thread_package t_pack;
@@ -142,24 +144,18 @@ char * lower_case(char * input, size_t length) {
 // @param void * arg parametro de entrada
 void * thread_callback(void * arg) {
     t_pack * param = arg;
-    // FINAL DO BUFFER QUE SERA ANALISADO
-    size_t to = (param->work_size * (param->id + 1));
     // INICIO DO BUFFER QUE SERA ANALISADO
-    size_t from = to - param->work_size;
-    // CASO SEJA A ULTIMA THREAD, ANALIZA ATE O FINAL DO ARQUIVO
-    if (param->is_last_thread) {
-        to = param->file->size;
-    }
+    size_t from = param->work_size * param->id;
     char * backup = NULL;
     char * buffer = NULL;
     int acc = 0;
 
-    // RECUPERA PRIMEIRA PALAVRA
-    buffer = __strtok_r(param->file->content + from, " ,.-\n\0", (char **) &backup);
+    // RECUPERA PRIMEIRA PALAVRA E COLOCA '\0' LOGO DEPOIS DA PRIMEIRA PALAVRA
+    buffer = __strtok_r(param->file->content + from, SPLIT_DELIM, (char **) &backup);
     
-    // ENQUANTO ESTIVER DENTRO DA FAIXA DETERMINADA
-	// printf("/ %p => %p /", (param->file->content + from), (param->file->content + to));
-    while (buffer != NULL && (param->file->content + from) <= (param->file->content + to)) {
+    // ENQUANTO EU NAO ENCONTRAR O '\0', PODE SER O FINAL DE UM ARQUIVO
+    // OU O '\0' INSERIDO PELO STRTOK DE OUTRA THREAD.
+    while (buffer != NULL) {
         // RECUPERA TAMANHO DA PALAVRA
         size_t length = strlen(buffer);
         
@@ -173,13 +169,13 @@ void * thread_callback(void * arg) {
         #endif
             // MOSTRA PALINDROMO
             #ifdef SHOW_PALINDROME_LIST
-               // printf("%s \t", buffer);
+                printf("%s \t", buffer);
             #endif
             // INCREMENTA BUFFER
             acc++;
         }
         // PROXIMA PALAVRA
-        buffer = __strtok_r(NULL, " :,;.-\n\t\r#", &backup);
+        buffer = __strtok_r(NULL, SPLIT_DELIM, &backup);
     }
 
     // TRANCA MUTEX DO ACUMULADOR COMPARTILHADO
@@ -223,8 +219,6 @@ int main() {
     for (i = 0; i < THREAD_NUMBER; i++) {
         // INICIA O PACOTE DE THREAD
         thread_package_init(per_thread + i, file, i, work_per_thread, &m_palindrome);
-        // MARCA FLAG CASO SEJA A ULTIMA THREAD
-        (per_thread + i)->is_last_thread = (i == THREAD_NUMBER - 1 && mod != 0);
         // CRIA THREAD
         pthread_create(t + i, NULL, thread_callback, per_thread + i);
     }
@@ -235,7 +229,9 @@ int main() {
     }
     
     // MOSTRA TOTAL DE PALINDROMOS
-    // printf("PALINDROMOS %u\n", (unsigned int) palindrome);
+    #ifdef SHOW_RESULT
+        printf("PALINDROMOS %u\n", (unsigned int) palindrome);
+    #endif
 }
 
 
