@@ -14,9 +14,9 @@
 // USAR VERIFICACAO DE TAMANHO
 #define USE_LENGTH_ANALYSIS true
 // TAMANHO MAXIMO CASO UTILIZE "USE_LENGTH" 
-#define MINIMAL_LENGTH 1
+#define MINIMAL_LENGTH 2
 // MOSTRA LISTA DE PALINDROMOS
-//#define SHOW_PALINDROME_LIST true
+#define SHOW_PALINDROME_LIST true
 
 // GUARDA A INFORMACAO DO ARQUIVO ABERTO
 struct file_information {
@@ -153,11 +153,13 @@ void * thread_callback(void * arg) {
     char * backup = NULL;
     char * buffer = NULL;
     int acc = 0;
-    
+
     // RECUPERA PRIMEIRA PALAVRA
     buffer = __strtok_r(param->file->content + from, " ,.-\n\0", (char **) &backup);
- 
-    do {
+    
+    // ENQUANTO ESTIVER DENTRO DA FAIXA DETERMINADA
+	// printf("/ %p => %p /", (param->file->content + from), (param->file->content + to));
+    while (buffer != NULL && (param->file->content + from) <= (param->file->content + to)) {
         // RECUPERA TAMANHO DA PALAVRA
         size_t length = strlen(buffer);
         
@@ -171,15 +173,14 @@ void * thread_callback(void * arg) {
         #endif
             // MOSTRA PALINDROMO
             #ifdef SHOW_PALINDROME_LIST
-                 printf("%d => %s \t", (unsigned int)param->id, buffer);
+               // printf("%s \t", buffer);
             #endif
             // INCREMENTA BUFFER
             acc++;
         }
         // PROXIMA PALAVRA
         buffer = __strtok_r(NULL, " :,;.-\n\t\r#", &backup);
-    // ENQUANTO ESTIVER DENTRO DA FAIXA DETERMINADA
-    } while (buffer != NULL && buffer <= (param->file->content + to));
+    }
 
     // TRANCA MUTEX DO ACUMULADOR COMPARTILHADO
     pthread_mutex_lock(param->palindrome->mutex);
@@ -234,7 +235,7 @@ int main() {
     }
     
     // MOSTRA TOTAL DE PALINDROMOS
-    printf("PALINDROMOS %u\n", (unsigned int) palindrome);
+    // printf("PALINDROMOS %u\n", (unsigned int) palindrome);
 }
 
 
